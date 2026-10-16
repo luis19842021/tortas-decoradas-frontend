@@ -1,0 +1,12 @@
+export const NEGOCIO = "Colores Tortas Decoradas";
+export const TITULAR = "María Cristina Squitieri";
+export const CUIT = "23-31925423-4";
+export const DOMICILIO = "Almagro, Ciudad Autónoma de Buenos Aires";
+export const EMAIL_CONTACTO = "colorestortasdecoradas@gmail.com";
+export const WHATSAPP_VISIBLE = "1121804172";
+export const WHATSAPP_LINK = "5491121804172";
+export const ACTUALIZADO = "11 de octubre de 2026";
+export const VERSION_TERMINOS = "2026-10-11";
+export const MINUTOS_PARA_PAGAR = 20;
+export const DIAS_ARREPENTIMIENTO = 10;
+export const URL_DEFENSA_CONSUMIDOR = "https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario";

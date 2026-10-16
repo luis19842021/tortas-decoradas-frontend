@@ -1,0 +1,35 @@
+.topnav {
+
+    background-color: #0f98c5;
+    width: 100%;
+
+    padding: 0;
+
+}
+
+.lista {
+    list-style-type: none;
+    padding: 0px;
+
+    color: #737475;
+}
+
+.lista li {
+    float: left;
+
+}
+
+.circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ded6d6;
+    border-radius: 50%;
+    width: 180px;
+    height: 180px;
+    margin-top: 10px;
+}
+
+.calen {
+    padding-bottom: 10px;
+}
