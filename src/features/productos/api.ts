@@ -367,6 +367,28 @@ export const actualizarProducto = cache(async (id: number, cambios: {
   return producto;
 })
 
+export const eliminarSabor = async (id: number) => {
+  const response = await apiFetch("/producto/lista/" + id, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    }
+  });
+
+  if (response.status === 409) {
+    let mensaje = "El sabor está en uso y no se puede eliminar.";
+    try {
+      const cuerpo = await response.json();
+      if (cuerpo?.mensaje) mensaje = cuerpo.mensaje;
+    } catch { /* sin cuerpo */ }
+    throw new Error(mensaje);
+  }
+
+  if (!response.ok) {
+    throw new Error("No se pudo eliminar el sabor");
+  }
+};
+
 export const eliminarProducto = cache(async (id: number) => {
   const response = await apiFetch("/producto/" + id, {
     method: 'DELETE',

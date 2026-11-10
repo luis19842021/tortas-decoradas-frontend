@@ -96,7 +96,7 @@ export default function SelectorRelleno(dato: Dato) {
 
                     <button onClick={() => { if (!dato.bloqueado) dato.funcionOpen(dato.titulo) }} className={`${dato.producto.tipoDeProducto?.detalleDeTorta.pisos == 1 ? "h-10 text-xl w-full sm:w-80 bg-red-400 rounded-r-lg " :dato.producto.tipoDeProducto?.detalleDeTorta.pisos == 2 ?  "h-6 text-lg w-full sm:w-80 bg-red-400 rounded-r-lg ":"h-5 w-full sm:w-60 truncate bg-green-600  z-20"} flex  justify-center items-center  ${dato.bloqueado ? "" : "cursor-pointer"} ${dato.producto.tipoDeProducto?.detalleDeTorta.pisos==3 &&dato.open==false ?"rounded-bl-xl rounded-br-xl":""}`} >
                         <div className={`${dato.producto.tipoDeProducto?.detalleDeTorta.pisos==3?"text-[#9d08b1] font-semibold ml-5 ":"text-white "} flex items-center justify-center gap-1.5 w-full sm:w-60 truncate `}>
-                            <span className="truncate">{dato.relleno} </span>
+                            <span className="truncate" title={String(dato.relleno ?? "")}>{dato.relleno} </span>
                             <Insignia sabor={saborSeleccionado} />
                         </div>
                         {!dato.bloqueado && (
@@ -104,13 +104,13 @@ export default function SelectorRelleno(dato: Dato) {
                         )}
                     </button>
 
-                    <div className={`absolute z-15  bg-white  rounded shadow-lg  flex flex-col  ${dato.producto.tipoDeProducto?.detalleDeTorta.pisos == 3 ?"w-full sm:w-60":"w-full sm:w-80"}  ${(dato.open == false || dato.bloqueado) ? "hidden" : ""}`}>
+                    <div className={`absolute z-15  bg-white  rounded shadow-lg  flex flex-col  ${dato.producto.tipoDeProducto?.detalleDeTorta.pisos == 3 ?"w-full sm:w-72":"w-full sm:w-80"}  ${(dato.open == false || dato.bloqueado) ? "hidden" : ""}`}>
 
                         <ul className="max-h-64 overflow-y-auto">
 
                             {lista.map((item, slideIndex) => (
-                                <li key={slideIndex} onClick={() => dato.funcionClose(slideIndex, dato.titulo)} className={`${dato.producto.tipoDeProducto?.detalleDeTorta.estructura == true && item.sabor == "Ninguno" ? "hidden" : "flex"} items-center justify-between gap-2 px-4 py-2   hover:bg-red-100  ${dato.relleno == lista[slideIndex].sabor ? "bg-orange-200" : ""}`}  >
-                                    <span className="truncate">{lista[slideIndex].sabor}</span>
+                                <li key={slideIndex} onClick={() => dato.funcionClose(slideIndex, dato.titulo)} className={`${dato.producto.tipoDeProducto?.detalleDeTorta.estructura == true && item.sabor == "Ninguno" ? "hidden" : "flex"} items-center justify-between gap-2 px-4 py-2 text-left hover:bg-red-100  ${dato.relleno == lista[slideIndex].sabor ? "bg-orange-200" : ""}`}  >
+                                    <span className="min-w-0 whitespace-normal break-words leading-snug">{lista[slideIndex].sabor}</span>
                                     <Insignia sabor={lista[slideIndex]} />
                                 </li>
                             ))}

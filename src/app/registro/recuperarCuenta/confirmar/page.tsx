@@ -113,8 +113,8 @@ function ConfirmarRecuperacionContent() {
         e.preventDefault();
         setErrorFormulario("");
 
-        if (nuevaContrasenia.length < 6) {
-            setErrorFormulario("La contraseña debe tener al menos 6 caracteres.");
+        if (nuevaContrasenia.length < 8) {
+            setErrorFormulario("La contraseña debe tener al menos 8 caracteres.");
             return;
         }
         if (nuevaContrasenia !== confirmarContrasenia) {

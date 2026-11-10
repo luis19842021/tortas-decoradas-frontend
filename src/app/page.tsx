@@ -2,15 +2,12 @@ import Carrusel from "@/features/productos/carrusel/Carrusel"
 import { getCarrusel } from "@/features/productos/carrusel/api";
 import TitulosHome from "@/componenets/TitulosHome";
 
-import { getProduct } from "@/features/productos/api";
-import { Producto } from "./interfaces/producto.interface";
 
 export const dynamic = "force-dynamic"
 
 export default async function Home() {
 
   const imagenesCarrusel = await getCarrusel()
-  const pepe: Producto[] = await getProduct()
 
   const titulos = [
     {

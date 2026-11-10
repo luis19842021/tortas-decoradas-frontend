@@ -81,6 +81,7 @@ export default async function producto({
                             <h2 className={`font-bold text-2xl underline text-cyan-900 ${oi.className}`}>Descripcion :</h2>
                             <p className="pt-4 text-lg text-gray-700">{producto.descripcion ? producto.descripcion : "Este producto no tiene una descripción cargada."}</p>
                             <p className="pt-2 text-lg text-gray-700 font-semibold">Categoría: {producto.categoria}</p>
+                            <p className="pt-2 text-base text-gray-700"><span className="font-semibold">Nota:</span> si hay nombres o números en el producto, nos pondremos en contacto con vos para cambiarlos o quitarlos.</p>
                         </div>
                         <FormaDeEnvio className="relative bg-blue-100 rounded-xl pb-4" />
                     </div>

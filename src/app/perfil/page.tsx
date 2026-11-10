@@ -244,7 +244,7 @@ export default function PerfilPage() {
                                     value={contraseniaNueva}
                                     onChange={(e) => setContraseniaNueva(e.target.value)}
                                     required
-                                    minLength={6}
+                                    minLength={8}
                                     className="w-full mt-1 rounded-xl border-2 border-cyan-200 bg-white text-cyan-900 px-3 py-2 focus:outline-none focus:border-cyan-500"
                                 />
                             </div>
@@ -256,7 +256,7 @@ export default function PerfilPage() {
                                     value={contraseniaConfirmar}
                                     onChange={(e) => setContraseniaConfirmar(e.target.value)}
                                     required
-                                    minLength={6}
+                                    minLength={8}
                                     className="w-full mt-1 rounded-xl border-2 border-cyan-200 bg-white text-cyan-900 px-3 py-2 focus:outline-none focus:border-cyan-500"
                                 />
                             </div>

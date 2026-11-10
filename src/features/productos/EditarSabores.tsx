@@ -1,9 +1,9 @@
 "use client"
 import { useState } from "react";
-import { Candy, Plus } from "lucide-react";
+import { Candy, Plus, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { CategoriaSabor, Sabor } from "@/app/interfaces/producto.interface";
-import { guardarCategoriaSabor, guardarSabor } from "@/features/productos/api";
+import { eliminarSabor, guardarCategoriaSabor, guardarSabor } from "@/features/productos/api";
 import SelectorAlergenos from "@/features/productos/SelectorAlergenos";
 import { ALERGENOS, Alergeno } from "@/features/productos/alergenos";
 
@@ -28,31 +28,67 @@ export default function EditarSabores({ saboresIniciales, categoriasIniciales }:
 
     const [saborEditando, setSaborEditando] = useState<Sabor | null>(null)
     const [alergenosEditando, setAlergenosEditando] = useState<Alergeno[]>([])
+    const [categoriaEditando, setCategoriaEditando] = useState<number>(0)
+    const [nombreEditando, setNombreEditando] = useState("")
     const [guardandoAlergenos, setGuardandoAlergenos] = useState(false)
 
     function abrirEdicion(sabor: Sabor) {
         setSaborEditando(sabor)
         setAlergenosEditando(sabor.alergenos ?? [])
+        setCategoriaEditando(sabor.categoria.idCategoriaSabor)
+        setNombreEditando(String(sabor.sabor))
     }
 
     async function guardarAlergenosSabor() {
         if (!saborEditando) return
+        const nombre = nombreEditando.trim()
+        if (!nombre) {
+            toast.warning("El sabor necesita un nombre")
+            return
+        }
+        if (nombre.toLowerCase() === "ninguno") {
+            toast.warning("Ese nombre está reservado")
+            return
+        }
+        if (sabores.some((s) => s.idLista_sabor !== saborEditando.idLista_sabor && String(s.sabor).trim().toLowerCase() === nombre.toLowerCase())) {
+            toast.warning(`Ya existe un sabor llamado "${nombre}"`)
+            return
+        }
         setGuardandoAlergenos(true)
         try {
             const actualizado = await guardarSabor({
                 idLista_sabor: saborEditando.idLista_sabor,
-                sabor: saborEditando.sabor,
-                idCategoriaSabor: saborEditando.categoria.idCategoriaSabor,
+                sabor: nombre,
+                idCategoriaSabor: categoriaEditando,
                 alergenos: alergenosEditando,
             })
             setSabores((prev) => prev.map((s) => s.idLista_sabor === actualizado.idLista_sabor ? actualizado : s))
-            toast.success(`Alérgenos de "${actualizado.sabor}" guardados`)
+            toast.success(`"${actualizado.sabor}" guardado`)
             setSaborEditando(null)
         } catch (error) {
             console.error("Error al guardar los alérgenos del sabor:", error)
             toast.warning("No se pudieron guardar los alérgenos")
         } finally {
             setGuardandoAlergenos(false)
+        }
+    }
+
+    const [eliminandoSabor, setEliminandoSabor] = useState(false)
+
+    async function borrarSabor() {
+        if (!saborEditando) return
+        if (!window.confirm(`¿Eliminar el sabor "${saborEditando.sabor}"? Esta acción no se puede deshacer.`)) return
+        setEliminandoSabor(true)
+        try {
+            await eliminarSabor(saborEditando.idLista_sabor)
+            setSabores((prev) => prev.filter((s) => s.idLista_sabor !== saborEditando.idLista_sabor))
+            toast.success(`"${saborEditando.sabor}" eliminado`)
+            setSaborEditando(null)
+        } catch (error) {
+            console.error("Error al eliminar el sabor:", error)
+            toast.warning(error instanceof Error ? error.message : "No se pudo eliminar el sabor")
+        } finally {
+            setEliminandoSabor(false)
         }
     }
 
@@ -124,7 +160,7 @@ export default function EditarSabores({ saboresIniciales, categoriasIniciales }:
                 </div>
                 <div>
                     <p className="text-gray-700 text-xl font-semibold">Sabores / Rellenos</p>
-                    <p className="text-gray-500">Los sabores se agrupan en 3 categorías con un precio cada una. Agregá sabores nuevos eligiendo su categoría, o subí el precio de una categoría entera acá abajo. Tocá un sabor para cargar sus alérgenos.</p>
+                    <p className="text-gray-500">Los sabores se agrupan en 3 categorías con un precio cada una. Agregá sabores nuevos eligiendo su categoría, o subí el precio de una categoría entera acá abajo. Tocá un sabor para cambiarle el nombre, la categoría, cargar sus alérgenos o eliminarlo (solo si ninguna torta lo usa).</p>
                 </div>
             </div>
 
@@ -205,9 +241,36 @@ export default function EditarSabores({ saboresIniciales, categoriasIniciales }:
 
             {saborEditando && (
                 <div className="mt-6 rounded-xl border-2 border-cyan-600 bg-cyan-50 px-4 py-4 flex flex-col gap-3">
-                    <p className="text-gray-700 font-semibold">Alérgenos de &quot;{saborEditando.sabor}&quot;</p>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-sm text-gray-500">Nombre del sabor</label>
+                        <input type="text" value={nombreEditando}
+                            onChange={(e) => setNombreEditando(e.target.value)}
+                            disabled={guardandoAlergenos}
+                            className="border-2 rounded-xl bg-white border-cyan-700 h-10 w-full sm:w-64 px-4" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-sm text-gray-500">Categoría</label>
+                        <select value={categoriaEditando}
+                            onChange={(e) => setCategoriaEditando(Number(e.target.value))}
+                            disabled={guardandoAlergenos}
+                            className="border-2 rounded-xl bg-white border-cyan-700 h-10 w-full sm:w-64 px-4">
+                            {categorias.map((categoria) => (
+                                <option key={categoria.idCategoriaSabor} value={categoria.idCategoriaSabor}>
+                                    {categoria.nombre}
+                                </option>
+                            ))}
+                        </select>
+                        {categoriaEditando !== saborEditando.categoria.idCategoriaSabor && (
+                            <p className="text-xs text-amber-600">Al cambiar de categoría, el sabor pasa a costar el precio de la nueva categoría en todas las tortas que lo usen.</p>
+                        )}
+                    </div>
                     <SelectorAlergenos seleccionados={alergenosEditando} onChange={setAlergenosEditando} deshabilitado={guardandoAlergenos} />
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-2 flex-wrap">
+                        <button type="button" onClick={borrarSabor} disabled={guardandoAlergenos || eliminandoSabor}
+                            className="mr-auto flex items-center gap-2 rounded-full h-10 px-5 font-semibold text-red-600 bg-white border border-red-300 hover:bg-red-50 disabled:opacity-50 cursor-pointer">
+                            <Trash2 size={16} />
+                            {eliminandoSabor ? "Eliminando..." : "Eliminar sabor"}
+                        </button>
                         <button type="button" onClick={() => setSaborEditando(null)} disabled={guardandoAlergenos}
                             className="rounded-full h-10 px-5 font-semibold text-gray-600 bg-white border hover:bg-gray-100 cursor-pointer">
                             Cancelar

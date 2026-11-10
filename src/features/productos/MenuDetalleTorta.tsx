@@ -468,15 +468,30 @@ export default function MenuDetalleTorta(dato: NivelUno) {
 
         const pisos = dato.producto.tipoDeProducto?.detalleDeTorta.pisos
 
-        let precio = dato.producto.precio
-        precio = precio + valorRelleno(r1) + valorRelleno(r2) + valorRelleno(r3) + valorTamaño(tam) + valorBiscocuelo(bis)
-
-        if (pisos && pisos >= 2) {
-            precio = precio + valorRelleno(r4) + valorRelleno(r5) + valorRelleno(r6) + valorTamaño(tamDos) + valorBiscocuelo(bisDos)
+        // El precio base ya incluye la configuración original de la torta (tamaños, bizcochuelos y rellenos
+        // cargados al crear el producto). Al elegir otras opciones se suma o resta solo la diferencia.
+        const sumaOpciones = (
+            t1: String | undefined, t2: String | undefined, t3: String | undefined,
+            b1: String | undefined, b2: String | undefined, b3: String | undefined,
+            rel: (String | undefined)[]
+        ) => {
+            let suma = valorRelleno(rel[0]) + valorRelleno(rel[1]) + valorRelleno(rel[2]) + valorTamaño(t1) + valorBiscocuelo(b1)
+            if (pisos && pisos >= 2) {
+                suma += valorRelleno(rel[3]) + valorRelleno(rel[4]) + valorRelleno(rel[5]) + valorTamaño(t2) + valorBiscocuelo(b2)
+            }
+            if (pisos && pisos >= 3) {
+                suma += valorRelleno(rel[6]) + valorRelleno(rel[7]) + valorRelleno(rel[8]) + valorTamaño(t3) + valorBiscocuelo(b3)
+            }
+            return suma
         }
-        if (pisos && pisos >= 3) {
-            precio = precio + valorRelleno(r7) + valorRelleno(r8) + valorRelleno(r9) + valorTamaño(tamTres) + valorBiscocuelo(bisTres)
-        }
+        const detalle = dato.producto.tipoDeProducto?.detalleDeTorta
+        const originales = sumaOpciones(
+            preTam(detalle?.tamaño?.medida), preTam(detalle?.tamañoDos?.medida), preTam(detalle?.tamañoTres?.medida),
+            detalle?.bizcochuelo?.bizcochuelo, detalle?.bizcochueloDos?.bizcochuelo, detalle?.bizcochueloTres?.bizcochuelo,
+            [0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => preRelleno(i))
+        )
+        const elegidas = sumaOpciones(tam, tamDos, tamTres, bis, bisDos, bisTres, [r1, r2, r3, r4, r5, r6, r7, r8, r9])
+        const precio = dato.producto.precio + elegidas - originales
         return precio
     }
 
